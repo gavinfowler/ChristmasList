@@ -25,6 +25,9 @@
           >
             {{ item.title }}
           </v-list-item>
+          <v-list-item @click="logout">
+            Logout
+          </v-list-item>
         </v-list>
       </v-menu>
     </v-app-bar>
@@ -50,6 +53,16 @@ export default {
   methods: {
     test(msg) {
       console.log(msg)
+    },
+    logout() {
+      this.$http
+        .post('/auth/logout')
+        .then(response => {
+          this.$router.push('/login')
+        })
+        .catch(error => {
+          console.log(error)
+        })
     }
   }
 }

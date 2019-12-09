@@ -4,7 +4,7 @@ module.exports = {
   ],
   'devServer': {
     'proxy': {
-      '/api/*': {
+      '/auth/*': {
         'target': 'http://localhost:5000',
         'secure': false
       }
