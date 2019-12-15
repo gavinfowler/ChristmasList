@@ -50,6 +50,19 @@ export default {
       { title: 'Click Me 2' }
     ]
   }),
+  mounted() {
+    this.$http.interceptors.response.use(
+      response => {
+        return response
+      },
+      error => {
+        if (error.response.status === 403) {
+          this.$router.push('login')
+        }
+        return error
+      }
+    )
+  },
   methods: {
     test(msg) {
       console.log(msg)

@@ -1,7 +1,7 @@
 <template>
   <div style="background-color: #34A65F; height: 100%">
-    <div class="pt-12">
-      <v-card width="30em" class="mx-auto">
+    <div class="login-card-div">
+      <v-card width="100%" class="login-card">
         <v-card-title>
           Login
         </v-card-title>
@@ -74,5 +74,34 @@ export default {
 .error-text {
   color: red;
   text-align: center;
+}
+.login-card {
+  padding: auto;
+  width: 100%;
+}
+.login-card-div {
+  width: 60%;
+  margin: auto;
+  padding-top: 5%;
+}
+@media only screen and (max-width: 800px) {
+  .login-card {
+    width: 100%;
+  }
+  .login-card-div {
+    width: 90%;
+    margin: auto;
+    padding-top: 20%;
+  }
+}
+@media only screen and (max-width: 600px) {
+  .login-card {
+    width: 80%;
+  }
+  .login-card-div {
+    width: 90%;
+    margin: auto;
+    padding-top: 20%;
+  }
 }
 </style>

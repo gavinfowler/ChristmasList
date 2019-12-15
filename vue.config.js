@@ -3,11 +3,6 @@ module.exports = {
     'vuetify'
   ],
   'devServer': {
-    'proxy': {
-      '/auth/*': {
-        'target': 'http://localhost:5000',
-        'secure': false
-      }
-    }
+    'proxy': 'http://localhost:5000'
   }
 }
