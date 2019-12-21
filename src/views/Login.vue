@@ -49,7 +49,6 @@ export default {
   methods: {
     submit() {
       this.error = ''
-      console.log(`username ${this.username}, password: ${this.password}`)
       this.$http
         .post('/auth/login', {
           username: this.username,

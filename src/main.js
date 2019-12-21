@@ -9,6 +9,8 @@ Vue.config.productionTip = false
 
 Vue.prototype.$http = axios
 
+store.dispatch('getUser')
+
 new Vue({
   router,
   store,
