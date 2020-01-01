@@ -1,35 +1,45 @@
 <template>
-  <div style="background-color: #34A65F; height: 100%">
+  <div style="background-color: #dcdcdc; height: 100%">
     <div class="login-card-div">
       <v-card width="100%" class="login-card">
         <v-card-title>
           Login
         </v-card-title>
         <v-card-text>
-          <v-text-field placeholder="Username" v-model="username">
+          <v-text-field
+            label="Username"
+            :rules="[rules.required]"
+            v-model="username"
+            outlined
+          >
             <v-icon slot="prepend">
               mdi-account
             </v-icon>
           </v-text-field>
           <v-text-field
-            placeholder="Password"
-            type="password"
             v-model="password"
-          >
-            <v-icon slot="prepend">
-              mdi-lock
-            </v-icon>
-          </v-text-field>
-          <router-link to="/register" style="float: right">
-            Register!
+            :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
+            prepend-icon="mdi-lock"
+            :rules="[rules.required]"
+            :type="show ? 'text' : 'password'"
+            name="password"
+            label="Password"
+            @click:append="show = !show"
+            outlined
+          ></v-text-field>
+          <router-link to="/register" class="text-center">
+            <h2>Register!</h2>
           </router-link>
-          <p class="error-text">
-            {{ error }}
-          </p>
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn @click="submit">
+          <!-- <v-btn @click="submit" block> -->
+          <v-btn
+            @click="submit"
+            :disabled="!(password !== '' && username !== '')"
+            color="primary"
+            block
+          >
             <v-icon left>mdi-login</v-icon>
             Login
           </v-btn>
@@ -44,26 +54,27 @@ export default {
   data: () => ({
     username: '',
     password: '',
-    error: ''
+    show: false,
+    rules: {
+      required: value => !!value || 'Required'
+    }
   }),
   methods: {
     submit() {
-      this.error = ''
       this.$http
         .post('/auth/login', {
           username: this.username,
           password: this.password
         })
         .then(response => {
-          console.log(response)
           if (response.data.authenticated) {
             this.$router.push('/')
           } else {
             this.error = response.data.error
           }
         })
-        .catch(e => {
-          console.log(e)
+        .catch(error => {
+          console.error(error)
         })
     }
   }
@@ -79,11 +90,11 @@ export default {
   width: 100%;
 }
 .login-card-div {
-  width: 60%;
+  width: 40%;
   margin: auto;
   padding-top: 5%;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1000px) {
   .login-card {
     width: 100%;
   }

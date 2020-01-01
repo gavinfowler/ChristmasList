@@ -1,13 +1,10 @@
 <template>
   <v-app>
     <v-app-bar app color="primary" dark>
-      <img
-        alt="Vue logo"
-        src="@/assets/logo-white.png"
-        style="height: 100%"
-        @click="$router.push('/')"
-        class="cursor"
-      />
+      <router-link to="/">
+        <img alt="Vue logo" src="@/assets/logo-white.png" class="cursor" />
+      </router-link>
+
       <v-spacer></v-spacer>
       <v-menu offset-y>
         <template v-slot:activator="{ on }">
@@ -18,6 +15,9 @@
           </v-btn>
         </template>
         <v-list>
+          <v-list-item link to="/">
+            Home
+          </v-list-item>
           <v-list-item
             v-for="(item, index) in items"
             :key="index"
@@ -25,6 +25,7 @@
           >
             {{ item.title }}
           </v-list-item>
+          <v-divider />
           <v-list-item @click="logout">
             Logout
           </v-list-item>

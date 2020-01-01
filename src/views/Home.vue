@@ -1,22 +1,15 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
+  <div style="background-color: #dcdcdc; height: 100%">
+    <h1 class="text-center">View all families lists here</h1>
     <v-btn @click="test">
       Test
     </v-btn>
-    <HelloWorld msg="Welcome to Your Vue.js App" />
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld'
-
 export default {
   name: 'home',
-  components: {
-    HelloWorld
-  },
   mounted() {},
   methods: {
     test() {

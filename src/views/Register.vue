@@ -1,46 +1,65 @@
 <template>
-  <div style="background-color: #34A65F; height: 100%">
+  <div style="background-color: #dcdcdc; height: 100%">
     <div class="login-card-div">
       <v-card width="100%" class="login-card">
         <v-card-title>
           Register
         </v-card-title>
         <v-card-text>
-          <v-text-field placeholder="Username" v-model="account.username">
+          <v-text-field
+            label="Username*"
+            v-model="account.username"
+            :rules="[rules.required]"
+            outlined
+          >
             <v-icon slot="prepend">
               mdi-account
             </v-icon>
           </v-text-field>
-          <v-text-field placeholder="Name" v-model="account.name">
+          <v-text-field
+            label="Name*"
+            v-model="account.name"
+            :rules="[rules.required]"
+            outlined
+          >
             <v-icon slot="prepend">
               mdi-account-badge
             </v-icon>
           </v-text-field>
-          <v-text-field placeholder="Email" v-model="account.email">
+          <v-text-field
+            label="Email*"
+            :rules="[rules.required]"
+            v-model="account.email"
+            outlined
+          >
             <v-icon slot="prepend">
               mdi-email
             </v-icon>
           </v-text-field>
           <v-text-field
-            placeholder="Password"
+            label="Password*"
             type="password"
             v-model="account.password"
+            :rules="[rules.required]"
+            outlined
           >
             <v-icon slot="prepend">
               mdi-lock
             </v-icon>
           </v-text-field>
           <v-text-field
-            placeholder="Check Password"
+            label="Check Password*"
             type="password"
             v-model="account.passwordCheck"
+            :rules="[rules.required, rules.checkPass]"
+            outlined
           >
             <v-icon slot="prepend">
               mdi-lock
             </v-icon>
           </v-text-field>
-          <router-link to="/login" style="float: right">
-            Login
+          <router-link to="/login" class="text-center">
+            <h2>Login</h2>
           </router-link>
           <p class="error-text">
             {{ error }}
@@ -48,7 +67,7 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn @click="submit">
+          <v-btn @click="submit" color="primary" block :disabled="!hasErrors">
             <v-icon left>mdi-account-plus</v-icon>
             Register
           </v-btn>
@@ -68,8 +87,22 @@ export default {
       password: '',
       passwordCheck: ''
     },
-    error: ''
+    error: '',
+    rules: {
+      required: value => !!value || 'Required'
+    }
   }),
+  computed: {
+    hasErrors() {
+      return (
+        this.account.username !== '' &&
+        this.account.name !== '' &&
+        this.account.email !== '' &&
+        this.account.password !== '' &&
+        this.account.passwordCheck !== ''
+      )
+    }
+  },
   methods: {
     submit() {
       this.error = ''
