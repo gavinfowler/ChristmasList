@@ -18,6 +18,9 @@
           <v-list-item link to="/">
             Home
           </v-list-item>
+          <v-list-item link to="/profile">
+            Profile
+          </v-list-item>
           <v-list-item
             v-for="(item, index) in items"
             :key="index"
@@ -63,6 +66,9 @@ export default {
         return error
       }
     )
+    if (this.$store.state.user === undefined) {
+      this.$store.getUser()
+    }
   },
   methods: {
     test(msg) {
@@ -82,7 +88,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .cursor {
   cursor: pointer;
 }

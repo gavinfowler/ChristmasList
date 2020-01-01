@@ -80,7 +80,8 @@ export default {
   }
 }
 </script>
-<style scoped>
+
+<style>
 .error-text {
   color: red;
   text-align: center;
