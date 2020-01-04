@@ -12,6 +12,7 @@
         item-text="name"
         item-value="key"
         v-model="familyKey"
+        outlined
       >
         <template v-slot:item="{ item }">
           {{ item.name }} (Key: {{ item.key }})
@@ -20,16 +21,25 @@
       <v-btn block color="primary" class="mt-4" @click="joinFamily">
         Join Family
       </v-btn>
+      <v-divider class="mt-8 mb-4" />
+      <h1>Create a New Family</h1>
+      <v-text-field outlined v-model="newFamily" label="New Family Name" />
+      <v-btn block color="primary" class="mt-4" @click="createFamily">
+        Create Family
+      </v-btn>
     </div>
     <div v-else-if="family !== '' && family !== null">
       <h1 class="text-center">Family members lists</h1>
+      <v-btn block color="primary" class="ma-4" @click="leaveFamily"
+        >Leave Family</v-btn
+      >
       <div v-for="set in familyPosts" :key="set['user']">
         <h2 class="text-center">{{ set['user'] }}'s Wish List</h2>
         <div class="d-flex flex-wrap flex-row">
           <v-card
             class="ma-4 d-flex flex-grow-1 flex-column item"
             v-for="item in set['posts']"
-            :key="item"
+            :key="item.id"
           >
             <v-img
               :src="item.img_url"
@@ -76,17 +86,11 @@ export default {
   name: 'home',
   mounted() {
     this.getFamily()
-    this.$http
-      .get('family/getAllFamilies')
-      .then(response => {
-        if (response.data.families) {
-          this.allFamilies = response.data.families
-        }
-      })
-      .catch(error => console.error(error))
+    this.getAllFamilies()
   },
   data: () => ({
     family: null,
+    newFamily: '',
     allFamilies: [],
     familyKey: 0,
     familyUsers: [],
@@ -94,7 +98,6 @@ export default {
   }),
   methods: {
     getFamily() {
-      console.log('getfamily')
       this.$http
         .get('family/getfamily')
         .then(response => {
@@ -107,25 +110,44 @@ export default {
         })
         .catch(error => console.error(error))
     },
+    getAllFamilies() {
+      this.$http
+        .get('family/getAllFamilies')
+        .then(response => {
+          if (response.data.families) {
+            this.allFamilies = response.data.families
+          }
+        })
+        .catch(error => console.error(error))
+    },
     getFamilyPosts() {
       this.$http
         .get('family/familyPosts')
         .then(response => {
           this.familyUsers = response.data.users
           this.familyPosts = response.data.posts
-          this.formatFamilyPosts(response.data.users, response.data.posts)
         })
         .catch(error => console.error(error))
     },
-    formatFamilyPosts(users, families) {
-      console.log(users)
-      console.log(families)
-    },
     joinFamily() {
-      console.log(this.familyKey)
       this.$http
         .post('/family/addfamily', { key: this.familyKey })
-        .then(response => this.getFamily)
+        .then(response => this.getFamily())
+        .catch(error => console.error(error))
+    },
+    leaveFamily() {
+      this.$http
+        .delete('/family/removeFamily')
+        .then(response => this.getFamily())
+        .catch(error => console.error(error))
+    },
+    createFamily() {
+      this.$http
+        .post('/family/createfamily', { name: this.newFamily })
+        .then(response => {
+          this.getAllFamilies()
+          this.newFamily = ''
+        })
         .catch(error => console.error(error))
     },
     test() {
@@ -135,8 +157,7 @@ export default {
           console.log(response)
         })
         .catch(error => {
-          console.log('error')
-          console.log(error)
+          console.error(error)
         })
     }
   }

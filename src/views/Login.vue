@@ -26,6 +26,7 @@
             label="Password"
             @click:append="show = !show"
             outlined
+            @keydown.enter="submit"
           ></v-text-field>
           <router-link to="/register" class="text-center">
             <h2>Register!</h2>
@@ -60,6 +61,9 @@ export default {
     }
   }),
   methods: {
+    test(event) {
+      console.log(event)
+    },
     submit() {
       this.$http
         .post('/auth/login', {
