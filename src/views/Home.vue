@@ -17,6 +17,11 @@
         <template v-slot:item="{ item }">
           {{ item.name }} (Key: {{ item.key }})
         </template>
+        <template v-slot:no-data>
+          <div class="pl-4">
+            No families available, please create one
+          </div>
+        </template>
       </v-autocomplete>
       <v-btn block color="primary" class="mt-4" @click="joinFamily">
         Join Family
@@ -146,6 +151,8 @@ export default {
         .post('/family/createfamily', { name: this.newFamily })
         .then(response => {
           this.getAllFamilies()
+          this.familyKey = response.data.family.key
+          this.joinFamily()
           this.newFamily = ''
         })
         .catch(error => console.error(error))
