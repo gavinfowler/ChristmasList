@@ -1,8 +1,8 @@
 <template>
   <div class="px-12" style="background-color: #dcdcdc; height: 100%">
-    <h2 class="text-center py-4">
+    <h1 class="text-center py-4">
       {{ this.$store.state.user.name }}'s Wish List
-    </h2>
+    </h1>
     <v-btn block color="primary" @click="showAddItem = !showAddItem">
       <div v-if="!showAddItem === true">Add an Item to Your List</div>
       <div v-else>Hide</div>
@@ -25,6 +25,10 @@
             name="notes"
             outlined
           />
+          <p>
+            You can find a link to an image if you right click the image and
+            select "Copy Link Location", once done, CTRL+v into the box below.
+          </p>
           <v-text-field label="Link to Item" v-model="item.item_url" outlined />
           <v-text-field label="Image Url" v-model="item.img_url" outlined />
         </v-card-text>
@@ -84,7 +88,7 @@
       </div>
     </div>
     <div v-else>
-      <h1>No items have been entered</h1>
+      <h2 class="text-center pt-8">No items have been entered</h2>
     </div>
   </div>
 </template>
