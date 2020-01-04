@@ -60,7 +60,7 @@
           ></v-img>
           <div v-else class="text-center py-6 my-8">
             <v-icon x-large class="pb-4">
-              far fa-images
+              mdi-camera-image
             </v-icon>
             <br />
             No image Available

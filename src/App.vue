@@ -16,20 +16,16 @@
         </template>
         <v-list>
           <v-list-item link to="/">
+            <v-icon class="pr-2">mdi-home</v-icon>
             Home
           </v-list-item>
           <v-list-item link to="/profile">
+            <v-icon class="pr-2">mdi-account</v-icon>
             Profile
-          </v-list-item>
-          <v-list-item
-            v-for="(item, index) in items"
-            :key="index"
-            @click="test(item.title)"
-          >
-            {{ item.title }}
           </v-list-item>
           <v-divider />
           <v-list-item @click="logout">
+            <v-icon class="pr-2">mdi-logout</v-icon>
             Logout
           </v-list-item>
         </v-list>
