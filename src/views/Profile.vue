@@ -40,17 +40,17 @@
         </v-card-actions>
       </v-card>
     </div>
-    <div v-if="this.items.length > 0" class="pt-8">
-      <div class="d-flex">
+    <div v-if="this.items.length > 0" class="pt-4">
+      <div class="d-flex flex-wrap flex-row ">
         <v-card
-          class="mx-auto"
-          max-width="344"
+          class="ma-4 d-flex flex-grow-1 flex-column item"
           v-for="item in items"
           :key="item.id"
         >
           <v-img
             :src="item.img_url"
-            width="100%"
+            max-height="400"
+            :contain="true"
             :alt="item.title"
             v-if="item.img_url"
           ></v-img>
@@ -61,11 +61,7 @@
             <br />
             No image Available
           </div>
-
-          <v-card-title>
-            {{ item.title }}
-          </v-card-title>
-
+          <v-card-title> {{ item.title }} </v-card-title>
           <v-card-subtitle>
             {{ item.timestamp }}
           </v-card-subtitle>
@@ -73,8 +69,9 @@
           <v-card-text v-if="item.notes !== ''">
             {{ item.notes }}
           </v-card-text>
+          <div class="flex-grow-1" />
 
-          <v-card-actions class="d-flex align-end flex-grow-1">
+          <v-card-actions>
             <v-btn :href="item.item_url" text v-if="item.item_url !== ''">
               View Item
             </v-btn>
@@ -99,6 +96,7 @@ export default {
     return {
       dialog: false,
       showAddItem: false,
+      name: '',
       item: {
         title: '',
         notes: '',
@@ -110,13 +108,20 @@ export default {
     }
   },
   mounted() {
+    if (this.$store.state.user) {
+      this.name = this.$store.state.user
+    } else {
+      this.$store.watch(
+        state => state.user,
+        newVal => (this.name = newVal)
+      )
+    }
     this.getItems()
   },
   methods: {
     submitItem() {
       this.showAddItem = false
       this.$http.post('/post/addpost', this.item).then(response => {
-        console.log(response)
         this.clear()
         this.getItems()
       })
@@ -126,7 +131,6 @@ export default {
         .get('/post/getposts')
         .then(response => {
           this.items = response.data.posts
-          console.log(this.items)
         })
         .catch(error => console.error(error))
     },
@@ -155,3 +159,14 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.item {
+  min-width: 350px;
+}
+@media all and (max-width: 600px) {
+  .item {
+    min-width: 200px;
+  }
+}
+</style>
