@@ -28,6 +28,13 @@ class User(UserMixin, db.Model):
         posts = Post.query.filter_by(user_id=self.id).all()
         return posts
 
+    def get_serialized_posts(self):
+        posts = self.get_posts()
+        serializedPosts = []
+        for post in posts:
+            serializedPosts.append(post.serialize())
+        return serializedPosts
+
     def set_family(self, family_id):
         self.family_id = family_id
         return self.family_id
@@ -39,6 +46,7 @@ class User(UserMixin, db.Model):
             "name": self.name,
             "email": self.email,
             "family_id": self.family_id,
+            "is_admin": self.is_admin
         }
         return user
 
@@ -79,8 +87,7 @@ class Family(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
     key = db.Column(db.Integer, index=True, unique=True)
-    creator = db.Column(db.String(64), unique=True)
-    # creator = db.relationship(db.Integer, db.ForeignKey("User.id"))
+    creator = db.Column(db.String(64))
     users = db.relationship("User", backref="member", lazy=True)
 
     def serialize(self):

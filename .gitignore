@@ -1,7 +1,6 @@
 .vscode/
 venv/
 **__pycache__**
-**migrations**
 **.flaskenv**
 **app.db**
 client/

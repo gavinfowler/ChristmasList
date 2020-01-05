@@ -14,3 +14,4 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD") or "Secret1@"
     ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL") or "email@email.com"
+    DB_SETUP = os.environ.get("DB_SETUP") or 0

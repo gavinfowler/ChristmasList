@@ -17,13 +17,16 @@ login.login_view = "login"
 
 from app import routes, models
 
-has_admin = len(models.User.query.filter_by(is_admin=True).all()) > 0
-if not has_admin:
-    email = Config.ADMIN_EMAIL
-    password = Config.ADMIN_PASSWORD
-    adminUser = models.User(name="admin", username="admin", email=email, is_admin=True)
-    adminUser.set_password(password)
-    db.session.add(adminUser)
-    db.session.commit()
-    has_admin = models.User.query.filter_by(is_admin=True).all()
+if Config.DB_SETUP == "0":
+    has_admin = len(models.User.query.filter_by(is_admin=True).all()) > 0
+    if not has_admin:
+        email = Config.ADMIN_EMAIL
+        password = Config.ADMIN_PASSWORD
+        adminUser = models.User(
+            name="admin", username="admin", email=email, is_admin=True
+        )
+        adminUser.set_password(password)
+        db.session.add(adminUser)
+        db.session.commit()
+        has_admin = models.User.query.filter_by(is_admin=True).all()
 
