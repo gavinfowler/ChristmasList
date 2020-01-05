@@ -36,10 +36,10 @@
             <v-icon color="red" v-if="!item.is_admin">mdi-close</v-icon>
           </template>
           <template v-slot:item.action="{ item }">
-            <v-icon small class="mr-2" @click="editUsers(item)">
+            <v-icon small class="mr-2" @click="editPosts(item)">
               mdi-pencil
             </v-icon>
-            <v-icon small @click="deleteUsers(item)">
+            <v-icon small @click="deletePosts(item)">
               mdi-delete
             </v-icon>
           </template>
@@ -122,9 +122,11 @@ export default {
         .catch(error => console.error(error))
     },
     editUsers() {
+      // TODO: Finish
       console.log('editUsers')
     },
     deleteUsers() {
+      // TODO: Finish
       console.log('deleteUsers')
     },
     getPosts() {
@@ -140,6 +142,14 @@ export default {
         })
         .catch(error => console.error(error))
     },
+    editPosts() {
+      // TODO: Finish
+      console.log('editPosts')
+    },
+    deletePosts() {
+      // TODO: Finish
+      console.log('deletePosts')
+    },
     findUsername(userId) {
       let username = ''
       this.users.forEach(user => {
@@ -151,6 +161,14 @@ export default {
     },
     getFamilies() {
       console.log('getFamilies')
+    },
+    editFamilies() {
+      // TODO: Finish
+      console.log('editFamilies')
+    },
+    deleteFamilies() {
+      // TODO: Finish
+      console.log('deleteFamilies')
     }
   }
 }
