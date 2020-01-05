@@ -203,26 +203,25 @@ def addFamily():
     Add a Family to current user
     """
     family_key = json.loads(request.data)["key"]
-    families = Family.query.filter_by(key=family_key).limit(1).all()
-    if len(families) == 0:
+    family = Family.query.filter_by(key=family_key).first()
+    if family is None:
         return {"error": "No families with that key"}
-    family = families[0]
     current_user.set_family(family.id)
     db.session.commit()
     return {"family": family.serialize()}
 
+
 @app.route("/family/getAllFamilies")
 @login_required
-def getAllFamiles():
+def getAllFamilies():
     """
-    Get a list of all available familes
+    Get a list of all available families
     """
     families = Family.query.all()
     familyList = []
     for family in families:
         familyList.append(family.serialize())
-    return {'families': familyList}
-
+    return {"families": familyList}
 
 
 @app.route("/family/getfamily")
@@ -234,7 +233,7 @@ def getFamily():
     family_id = current_user.family_id
     if family_id is None:
         return {"error": "No family available"}
-    family = Family.query.filter_by(id=current_user.family_id).limit(1).all()[0]
+    family = Family.query.filter_by(id=current_user.family_id).first()
     return {"family": family.serialize()}
 
 
@@ -246,7 +245,7 @@ def removeFamily():
     """
     current_user.set_family(None)
     db.session.commit()
-    user = User.query.filter_by(username=current_user.username).limit(1).all()[0]
+    user = User.query.filter_by(username=current_user.username).first()
     if user.family_id is None:
         return {"family_id": current_user.family_id}
     else:
@@ -265,7 +264,7 @@ def familyPosts():
     postList = []
     userList = []
     for user in users:
-        posts.append({'user': user.name, 'posts': user.get_serialized_posts()})
+        posts.append({"user": user.name, "posts": user.get_serialized_posts()})
         # TODO: clean this up
         userList.append(user.serialize())
         postList = postList + user.get_serialized_posts()
@@ -277,160 +276,183 @@ def familyPosts():
 ###########
 
 
-@app.route("/admin/users", methods=['GET', 'POST', 'DELETE'])
+@app.route("/admin/users/get", methods=["GET"])
 @login_required
-def adminUsers():
+def adminUsersGet():
     """
-    Admin user functionality
+    Admin - get users
     """
     if current_user.is_admin:
-        if request.method == 'DELETE':
-            body = json.loads(request.data)
-            id = body["id"]
-            user = User.query.filter_by(id=id).all()[0]
-            db.session.delete(user)
-            db.session.commit()
-            return {"acknowledged": True}
-        elif request.method == 'POST':
-            body = json.loads(request.data)
-            created_user = len(User.query.filter_by(id=id).all()) > 0
-            if not created_user:
-                if len(User.query.filter_by(email=body["email"]).all()) > 0:
-                    return {"acknowledged": False, "error": "Use a different email"}
-                user = User(username=body["username"], email=body["email"], name=body["name"])
-                user.set_password(body["password"])
-                db.session.add(user)
-                db.session.commit()
-                return {"acknowledged": True}
-            else:
-                user = User.query.filter_by(id=id).all()[0]
-                user.name = body['name']
-                user.email = body['email']
-                if body['password']:
-                    user.set_password(body['password'])
-                user.is_admin = body['id_admin']
-                user.family_id = body['family_id']
-                db.session.commit()
-                return {"acknowledged": True}
-        else:
-            users = User.query.all()
-            userList = []
-            for user in users:
-                userList.append(user.serialize())
-            return {"users": userList}
-    return {"authorized": False}
+        users = User.query.all()
+        userList = []
+        for user in users:
+            userList.append(user.serialize())
+        return {"users": userList}
+    return abort(403)
 
 
-@app.route("/admin/posts", methods=['GET', 'POST', 'DELETE'])
+@app.route("/admin/users/create", methods=["POST"])
 @login_required
-def adminPosts():
+def adminUsersCreate():
     """
-    Admin post functionality
+    Admin - create user
     """
     if current_user.is_admin:
-        if request.method == 'DELETE':
+        try:
             body = json.loads(request.data)
-            id = body["id"]
-            post = Post.query.filter_by(id=id).all()[0]
-            db.session.delete(post)
+            if len(User.query.filter_by(username=body["username"]).all()) > 0:
+                return {"acknowledged": False, "error": "Use a different username"}
+            if len(User.query.filter_by(email=body["email"]).all()) > 0:
+                return {"acknowledged": False, "error": "Use a different email"}
+            user = User(username=body["username"], email=body["email"], name=body["name"], is_admin=body["is_admin"])
+            user.set_password(body["password"])
+            db.session.add(user)
             db.session.commit()
             return {"acknowledged": True}
-        elif request.method == 'POST':
-            body = json.loads(request.data)
-            created_post = len(Post.query.filter_by(id=id).all()) > 0
-            if not created_user:
-                post = Post(
-                    title=body["title"],
-                    notes=body["notes"],
-                    img_url=body["img_url"],
-                    item_url=body["item_url"],
-                    user_id=current_user.id,
-                )
-                db.session.add(post)
-                db.session.commit()
-                return {"acknowledged": True}
-            else:
-                post = Post.query.filter_by(id=id).all()[0]
-                post.title = body['title']
-                post.notes = body['notes']
-                post.item_url = body['item_url']
-                post.img_url = body['img_url']
-                db.session.commit()
-                return {"acknowledged": True}
-        else:
-            posts = Post.query.all()
-            postList = []
-            for post in posts:
-                postList.append(post.serialize())
-            return {"posts": postList}
-    return {"authorized": False}
+        except exc.SQLAlchemyError as e:
+            e = e.__dict__["orig"]
+            print(e)
+            return {"acknowledged": False, "error": "Unable to register, check logs for error"}
+    return abort(403)
 
 
-@app.route("/admin/families", methods=['GET', 'POST', 'DELETE'])
+@app.route("/admin/users/edit", methods=["POST"])
 @login_required
-def adminFamilies():
+def adminUsersEdit():
     """
-    Admin families functionality
+    Admin - edit user
     """
-    # TODO: finish this function
-    return {'finished': True}
+    if current_user.is_admin:
+        body = json.loads(request.data)
+        id = body["id"]
+        user = User.query.filter_by(id=id).first()
+        if user is None:
+            user = User.query.filter_by(username=body["username"]).first()
+            if user is None:
+                return {"acknowledged": False, "error": "No user with id or username is detected"}
+        user.name = body["name"]
+        user.email = body["email"]
+        user.is_admin = body["is_admin"]
+        db.session.commit()
+        return {"acknowledged": True}
+    return abort(403)
 
-@app.route("/admin/getallusers")
+
+@app.route("/admin/users/delete", methods=["POST"])
 @login_required
-def getallusers():
+def adminUsersDelete():
     """
-    Get all of current users posts
+    Admin - delete user
     """
-    if not current_user.is_admin:
-        return {"authorized": False}
-    users = User.query.all()
-    returnUsers = []
-    for user in users:
-        returnUsers.append(user.serialize())
-    return {"users": returnUsers}
+    if current_user.is_admin:
+        body = json.loads(request.data)
+        id = body["id"]
+        user = User.query.filter_by(id=id).first()
+        db.session.delete(user)
+        db.session.commit()
+        return {"acknowledged": True}
+    return abort(403)
 
 
-@app.route("/admin/getallposts")
+@app.route("/admin/posts/get", methods=["GET"])
 @login_required
-def getallpost():
+def adminPostsGet():
     """
-    Get all of current users posts
+    Admin - get posts
     """
-    if not current_user.is_admin:
-        return {"authorized": False}
-    posts = Post.query.all()
-    returnPosts = []
-    for post in posts:
-        returnPosts.append(post.serialize())
-    return {"posts": returnPosts}
+    if current_user.is_admin:
+        posts = Post.query.all()
+        postList = []
+        for post in posts:
+            newPost = post.serialize()
+            username = User.query.filter_by(id=post.user_id).first().username
+            newPost["username"] = username
+            postList.append(newPost)
+        return {"posts": postList}
+    return abort(403)
 
 
-@app.route("/admin/getallfamilies")
+@app.route("/admin/posts/edit", methods=["POST"])
 @login_required
-def getallfamilies():
+def adminPostsEdit():
     """
-    Get all of current users posts
+    Admin - edit post
     """
-    if not current_user.is_admin:
-        return {"authorized": False}
-    families = Family.query.all()
-    returnFamilies = []
-    for family in families:
-        returnFamilies.append(family.serialize())
-    return {"families": returnFamilies}
+    if current_user.is_admin:
+        body = json.loads(request.data)
+        id = body["id"]
+        post = Post.query.filter_by(id=id).first()
+        if post is None:
+            return {"acknowledged": False, "error": "No post with that id is detected"}
+        post.title = body["title"]
+        post.notes = body["notes"]
+        post.item_url = body["item_url"]
+        post.img_url = body["img_url"]
+        db.session.commit()
+        return {"acknowledged": True}
+    return abort(403)
 
 
-@app.route("/admin/deletefamily", methods=["DELETE"])
+@app.route("/admin/posts/delete", methods=["POST"])
 @login_required
-def deleteFamily():
+def adminPostsDelete():
     """
-    Delete family
+    Admin - delete post
     """
-    family_id = json.loads(request.data)["id"]
-    families = Family.query.filter_by(id=family_id).limit(1).all()
-    if len(families) == 0:
-        return {"error": "No families with that id"}
-    db.session.delete(family)
-    db.session.commit()
-    user = User.query.filter_by(username=current_user.username).limit(1).all()[0]
-    return {"acknowledged": True}
+    if current_user.is_admin:
+        body = json.loads(request.data)
+        id = body["id"]
+        post = Post.query.filter_by(id=id).first()
+        db.session.delete(post)
+        db.session.commit()
+        return {"acknowledged": True}
+    return abort(403)
+
+
+@app.route("/admin/families/get", methods=["GET"])
+@login_required
+def adminFamiliesGet():
+    """
+    Admin - get posts
+    """
+    if current_user.is_admin:
+        families = Family.query.all()
+        familyList = []
+        for family in families:
+            familyList.append(family.serialize())
+        return {"families": familyList}
+    return abort(403)
+
+
+@app.route("/admin/families/edit", methods=["POST"])
+@login_required
+def adminFamiliesEdit():
+    """
+    Admin - edit post
+    """
+    if current_user.is_admin:
+        body = json.loads(request.data)
+        id = body["id"]
+        family = Family.query.filter_by(id=id).first()
+        if family is None:
+            return {"acknowledged": False, "error": "No family with that id is detected"}
+        family.name = body["name"]
+        db.session.commit()
+        return {"acknowledged": True}
+    return abort(403)
+
+
+@app.route("/admin/families/delete", methods=["POST"])
+@login_required
+def adminFamiliesDelete():
+    """
+    Admin - delete post
+    """
+    if current_user.is_admin:
+        body = json.loads(request.data)
+        id = body["id"]
+        family = Family.query.filter_by(id=id).first()
+        db.session.delete(family)
+        db.session.commit()
+        return {"acknowledged": True}
+    return abort(403)
