@@ -19,7 +19,6 @@ import random
 
 @login.unauthorized_handler
 def unauthorized():
-    # return {'authorized': False}
     return abort(403)
 
 
@@ -265,7 +264,6 @@ def familyPosts():
     userList = []
     for user in users:
         posts.append({"user": user.name, "posts": user.get_serialized_posts()})
-        # TODO: clean this up
         userList.append(user.serialize())
         postList = postList + user.get_serialized_posts()
     return {"users": userList, "posts": posts}
