@@ -3,4 +3,5 @@ venv/
 **__pycache__**
 app.db
 client/node_modules/
+client/package-lock.json
 client/dist/
