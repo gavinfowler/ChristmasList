@@ -25,11 +25,11 @@
             name="notes"
             outlined
           />
+          <v-text-field label="Link to Item" v-model="item.item_url" outlined />
           <p>
             You can find a link to an image if you right click the image and
             select "Copy Link Location", once done, CTRL+v into the box below.
           </p>
-          <v-text-field label="Link to Item" v-model="item.item_url" outlined />
           <v-text-field label="Image Url" v-model="item.img_url" outlined />
         </v-card-text>
         <v-card-actions>

@@ -19,11 +19,11 @@
             <v-icon class="pr-2">mdi-home</v-icon>
             Home
           </v-list-item>
-          <v-list-item link to="/profile">
-            <v-icon class="pr-2">mdi-account</v-icon>
-            Profile
+          <v-list-item link to="/family">
+            <v-icon class="pr-2">mdi-account-group</v-icon>
+            Family View
           </v-list-item>
-          <v-list-item v-if="this.$store.state.user.is_admin" link to="/admin">
+          <v-list-item v-if="isAdmin" link to="/admin">
             <v-icon class="pr-2">mdi-shield-account</v-icon>
             Admin
           </v-list-item>
@@ -61,15 +61,16 @@ export default {
         return error
       }
     )
-    if (this.$store.state.user === undefined) {
-      this.$store.getUser()
-    }
-    this.$http
-      .get('/auth/isAdmin')
-      .then(response => {
-        this.isAdmin = response.data.is_admin
-      })
-      .catch(error => console.error(error))
+    this.$store.watch(
+      state => state.user,
+      () => {
+        if (this.$store.state.user) {
+          this.isAdmin = this.$store.state.user.is_admin
+        } else {
+          this.isAdmin = false
+        }
+      }
+    )
   },
   methods: {
     test(msg) {

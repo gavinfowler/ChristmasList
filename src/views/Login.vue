@@ -31,6 +31,7 @@
           <router-link to="/register" class="text-center">
             <h2>Register!</h2>
           </router-link>
+          <div style="color: red;">{{ error }}</div>
         </v-card-text>
         <v-card-actions>
           <v-spacer />
@@ -56,6 +57,7 @@ export default {
     username: '',
     password: '',
     show: false,
+    error: '',
     rules: {
       required: value => !!value || 'Required'
     }
@@ -72,6 +74,7 @@ export default {
         })
         .then(response => {
           if (response.data.authenticated) {
+            this.$store.dispatch('getUser')
             this.$router.push('/')
           } else {
             this.error = response.data.error
