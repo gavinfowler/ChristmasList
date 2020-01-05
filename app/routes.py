@@ -22,6 +22,11 @@ def unauthorized():
     return abort(403)
 
 
+@app.route("/")
+def home():
+    return render_template('index.html')
+
+
 ####################
 #  AUTHENTICATION  #
 ####################

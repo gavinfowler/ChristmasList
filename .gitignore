@@ -1,5 +1,6 @@
 .vscode/
 venv/
 **__pycache__**
-**.flaskenv**
-**app.db**
+app.db
+client/node_modules/
+client/dist/

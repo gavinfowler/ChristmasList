@@ -6,7 +6,7 @@ from flask_login import LoginManager
 from flask_cors import CORS
 
 app = Flask(
-    __name__, static_folder="../client/dist/static", template_folder="../client/dist"
+    __name__, static_folder="../client/dist/", template_folder="../client/dist/",
 )
 app.config.from_object(Config)
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
